@@ -1,11 +1,12 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <algorithm>
 using namespace std;
 
 class BaseEntity {
 public:
-    virtual void display() = 0;
+    virtual void display() = 0;  
     virtual void add() = 0;
     virtual void remove() = 0;
     virtual void update() = 0;
@@ -23,12 +24,12 @@ public:
     void display() override {
         cout << "\n===== DANH SACH LOP HOC =====\n";
         if (classes.empty()) { cout << "Chua co lop nao\n"; return; }
-        for (auto &c : classes) {
-            cout << "Ma lop: " << c.id
-                << " | Ten: " << c.name
-                << " | Chuyen nganh: " << c.major
-                << " | Loai: " << c.type << endl;
-        }
+
+        for (auto &c : classes)
+            cout << "Ma: " << c.id
+                 << " | Ten: " << c.name
+                 << " | Chuyen nganh: " << c.major
+                 << " | Loai: " << c.type << endl;
     }
 
     void add() override {
@@ -36,7 +37,15 @@ public:
         cout << "\nNhap ma lop: "; getline(cin, c.id);
         cout << "Nhap ten lop: "; getline(cin, c.name);
         cout << "Nhap chuyen nganh: "; getline(cin, c.major);
-        cout << "Nhap loai lop (CNTT/NN): "; getline(cin, c.type);
+
+        do {
+            cout << "Nhap loai lop (CNTT / NGOAI NGU): ";
+            getline(cin, c.type);
+            for (auto &x : c.type) x = toupper(x);
+            if (c.type != "CNTT" && c.type != "NGOAI NGU")
+                cout << "Loai khong hop le! Hay nhap lai.\n";
+        } while (c.type != "CNTT" && c.type != "NGOAI NGU");
+
         classes.push_back(c);
         cout << "=> Them lop thanh cong!\n";
     }
@@ -45,13 +54,14 @@ public:
         string id;
         cout << "\nNhap ma lop can xoa: ";
         getline(cin, id);
-        for (auto it = classes.begin(); it != classes.end(); ++it) {
+
+        for (auto it = classes.begin(); it != classes.end(); ++it)
             if (it->id == id) {
                 classes.erase(it);
                 cout << "=> Xoa thanh cong!\n";
                 return;
             }
-        }
+
         cout << "Khong tim thay lop!\n";
     }
 
@@ -59,15 +69,22 @@ public:
         string id;
         cout << "\nNhap ma lop can cap nhat: ";
         getline(cin, id);
-        for (auto &c : classes) {
+
+        for (auto &c : classes)
             if (c.id == id) {
-                cout << "Nhap ten lop moi: "; getline(cin, c.name);
+                cout << "Nhap ten moi: "; getline(cin, c.name);
                 cout << "Nhap chuyen nganh moi: "; getline(cin, c.major);
-                cout << "Nhap loai moi: "; getline(cin, c.type);
+
+                do {
+                    cout << "Nhap loai moi (CNTT / NGOAI NGU): ";
+                    getline(cin, c.type);
+                    for (auto &x : c.type) x = toupper(x);
+                } while (c.type != "CNTT" && c.type != "NGOAI NGU");
+
                 cout << "=> Cap nhat thanh cong!\n";
                 return;
             }
-        }
+
         cout << "Khong tim thay lop!\n";
     }
 };
@@ -83,13 +100,13 @@ public:
     void display() override {
         cout << "\n===== DANH SACH SINH VIEN =====\n";
         if (students.empty()) { cout << "Chua co sinh vien\n"; return; }
-        for (auto &s : students) {
+
+        for (auto &s : students)
             cout << "Ma SV: " << s.id
-                << " | Ten: " << s.name
-                << " | Ngay sinh: " << s.dob
-                << " | Email: " << s.email
-                << " | SDT: " << s.phone << endl;
-        }
+                 << " | Ten: " << s.name
+                 << " | Ngay sinh: " << s.dob
+                 << " | Email: " << s.email
+                 << " | SDT: " << s.phone << endl;
     }
 
     void add() override {
@@ -98,7 +115,8 @@ public:
         cout << "Nhap ten sinh vien: "; getline(cin, s.name);
         cout << "Nhap ngay sinh: "; getline(cin, s.dob);
         cout << "Nhap email: "; getline(cin, s.email);
-        cout << "Nhap so dien thoai: "; getline(cin, s.phone);
+        cout << "Nhap SDT: "; getline(cin, s.phone);
+
         students.push_back(s);
         cout << "=> Them sinh vien thanh cong!\n";
     }
@@ -107,13 +125,14 @@ public:
         string id;
         cout << "\nNhap ma sinh vien can xoa: ";
         getline(cin, id);
-        for (auto it = students.begin(); it != students.end(); ++it) {
+
+        for (auto it = students.begin(); it != students.end(); ++it)
             if (it->id == id) {
                 students.erase(it);
                 cout << "=> Xoa thanh cong!\n";
                 return;
             }
-        }
+
         cout << "Khong tim thay sinh vien!\n";
     }
 
@@ -121,16 +140,18 @@ public:
         string id;
         cout << "\nNhap ma sinh vien can cap nhat: ";
         getline(cin, id);
-        for (auto &s : students) {
+
+        for (auto &s : students)
             if (s.id == id) {
                 cout << "Nhap ten moi: "; getline(cin, s.name);
                 cout << "Nhap ngay sinh moi: "; getline(cin, s.dob);
                 cout << "Nhap email moi: "; getline(cin, s.email);
                 cout << "Nhap SDT moi: "; getline(cin, s.phone);
+
                 cout << "=> Cap nhat thanh cong!\n";
                 return;
             }
-        }
+
         cout << "Khong tim thay sinh vien!\n";
     }
 };
@@ -140,20 +161,20 @@ void submenu(BaseEntity* entity) {
     do {
         cout << "\n1. Hien thi\n2. Them moi\n3. Xoa\n4. Cap nhat\n0. Quay lai\nChon: ";
         cin >> choice; cin.ignore();
-        switch (choice) {
-            case 1: entity->display(); break;
-            case 2: entity->add(); break;
-            case 3: entity->remove(); break;
-            case 4: entity->update(); break;
-        }
+
+        if (choice == 1) entity->display();
+        else if (choice == 2) entity->add();
+        else if (choice == 3) entity->remove();
+        else if (choice == 4) entity->update();
+
     } while (choice != 0);
 }
 
 int main() {
     ClassRoom classMgr;
     Student studentMgr;
-    int choice;
 
+    int choice;
     do {
         cout << "\n===== MENU QUAN LY RIKKEI EDU =====\n";
         cout << "1. Quan ly lop hoc\n";
